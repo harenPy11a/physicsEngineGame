@@ -47,7 +47,11 @@ Body.rotate(wall2,2.5)
 Body.rotate(wall3,-2.5)
 Body.rotate(wall4,2.5)
 
-Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4])
+//funnel
+var funellPart1 = Bodies.rectangle(950, 830, 50, 150, {isStatic:true})
+var funellPart2 = Bodies.rectangle(1100, 830, 50, 150, {isStatic:true})
+
+Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4, funellPart1, funellPart2])
 //create ball being launched
 
 setTimeout(() => {
