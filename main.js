@@ -25,16 +25,24 @@ var runner = Runner.create();
 Runner.run(runner, engine)
 
 //create cannon
-var cannon = Bodies.rectangle(90, 410, 300, 100, {isStatic:true})
-Body.rotate(cannon, 2.5);
+var cannonside1 = Bodies.rectangle(90, 410, 265, 20, {isStatic:true})
+var cannonside2 = Bodies.rectangle(120, 480, 300, 20, {isStatic:true})
+var end = Bodies.rectangle(10, 520, 45, 45, {isStatic:true})
+var ball = Bodies.circle(170, 390, 25, 25)
+Body.rotate(cannonside1, 2.5);
+Body.rotate(cannonside2, 2.5)
+Body.rotate(end, 2.5)
+Render.lookAt(render, {
+    min: { x: ball.position.x - 750 , y: ball.position.y-300},
+    max: { x: ball.position.x + 750, y: ball.position.y+300}
+});
 
+Composite.add(engine.world, [cannonside1, cannonside2, end, ball])
 //create ball being launched
-var ball = Bodies.circle(cannon.position.x + 150, 0, 40)
-Composite.add(engine.world, [cannon, ball]);
-engine.gravity.y = 0.2
+
 setTimeout(() => {
     fireCannon();
-}, 2000);
+}, 3000);
 
 //code for changing camera view
 // Render.lookAt(render, {
@@ -43,17 +51,16 @@ setTimeout(() => {
 // });
 
 function fireCannon(){
-    engine.gravity.y = 1;
     console.log("fired")
-    Body.applyForce(ball, ball.position, {x: 0.5, y:-0.5})
-    followCamera(ball);
+    Body.applyForce(ball, ball.position, {x: 0.15, y:-0.15})
+    followCamera(ball)
 }
 
-function followCamera(b, num){
+function followCamera(b){
     var start = new Date();
     var interval = setInterval(() => {
         Render.lookAt(render, {
-            min: { x: b.position.x , y: b.position.y -300},
+            min: { x: b.position.x-750 , y: b.position.y-300},
             max: { x: b.position.x + 750, y: b.position.y+300}
         });
 
