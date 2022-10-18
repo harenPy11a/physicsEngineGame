@@ -14,8 +14,8 @@ var render = Render.create({
     engine:engine,
     options:{
         hasBounds : true,
-        width: 1500,
-        height: 600
+        width: innerWidth,
+        height: innerHeight
     }
 })
 
