@@ -6,7 +6,8 @@ var Bodies = Matter.Bodies
 var Body = Matter.Body
 var Composite = Matter.Composite
 var Bounds = Matter.Bounds
-
+var Collision = Matter.Collision
+var events = Matter.events
 //create engine
 var engine = Engine.create()
 var render = Render.create({
@@ -28,7 +29,7 @@ Runner.run(runner, engine)
 var cannonside1 = Bodies.rectangle(90, 410, 300, 20, {isStatic:true})
 var cannonside2 = Bodies.rectangle(120, 480, 300, 20, {isStatic:true})
 var end = Bodies.rectangle(10, 520, 45, 45, {isStatic:true})
-var ball = Bodies.polygon(170, 390, 25, 25, {restitution: 0.8, friction: .05})
+var ball = Bodies.polygon(170, 390, 25, 25, {restitution: 0.8})
 Body.rotate(cannonside1, 2.5);
 Body.rotate(cannonside2, 2.5)
 Body.rotate(end, 2.5)
@@ -64,7 +65,7 @@ for(var i = 0; i < rows; i++){
         if(i % 2 == 1){
             x += spacing/2 
             var y = spacing + i * spacing + 1200
-            var peg =  new Bodies.polygon(x,y,500,20, {isStatic:true})
+            var peg =  new Bodies.polygon(x,y,500,15, {isStatic:true})
             // var peg = new Peg(x, y, 5)
             pegs.push(peg);
             
@@ -72,7 +73,7 @@ for(var i = 0; i < rows; i++){
         else {
             if(j != 0){
                 var y = spacing + i * spacing + 1200
-                var peg =  new Bodies.polygon(x,y,500,20, {isStatic:true})
+                var peg =  new Bodies.polygon(x,y,500,15, {isStatic:true})
                 pegs.push(peg);
 
             }
@@ -98,30 +99,33 @@ Body.rotate(wall2,2.5)
 Body.rotate(wall3,-2.5)
 Body.rotate(wall4,2.5)
 //create the ramps
-var platform6 = Bodies.rectangle(1420, 2805, 580, 20, {isStatic:true})
-var platform = Bodies.rectangle(1000, 2920, 300, 20, {isStatic:true})
-var platform2 = Bodies.rectangle(720, 3000, 300, 20, {isStatic:true})
-var platform3 = Bodies.rectangle(420, 3030, 300, 20, {isStatic:true})
-var platform4 = Bodies.rectangle(120, 3050, 300, 20, {isStatic:true})
-var platform5 = Bodies.rectangle(320, 3300, 300, 20, {isStatic:true})
-var platform7 = Bodies.rectangle(560, 3400, 300, 20, {isStatic:true})
-var platform8 = Bodies.rectangle(850, 3420, 300, 20, {isStatic:true})
-Body.rotate(platform, -.4)
-Body.rotate(platform2, -.1)
-Body.rotate(platform3, -.1)
-Body.rotate(platform4,-2)
-Body.rotate(platform5,-2.5)
-Body.rotate(platform6,-.2)
-Body.rotate(platform7,-3)
-Body.rotate(platform8,0)
+var platform6 = Bodies.rectangle(1420, 2830, 580, 20, {isStatic:true, friction: -10})
+var platform = Bodies.rectangle(1000, 3000, 300, 20, {isStatic:true, friction: -10})
+var platform2 = Bodies.rectangle(700, 3090, 300, 20, {isStatic:true, friction: -10})
+var platform4 = Bodies.rectangle(120, 3070, 300, 20, {isStatic:true, friction: -10})
+var platform5 = Bodies.rectangle(320, 3300, 300, 20, {isStatic:true, friction: -10})
+var platform7 = Bodies.rectangle(580, 3415, 300, 20, {isStatic:true, friction: -10})
+var platform8 = Bodies.rectangle(1070, 3500, 700, 20, {isStatic:true, friction: 0})
+Body.rotate(platform, -0.2)
+Body.rotate(platform2, -.3)
+Body.rotate(platform4,-2.2)
+Body.rotate(platform5,.7)
+Body.rotate(platform6,-.5)
+Body.rotate(platform7,.2)
+Body.rotate(platform8,.1)
+
+//add reverse gravity tunnel;
+var base = Bodies.rectangle(1900, 4000, 750, 20, {isStatic:true})
+var tunnelLeft = Bodies.rectangle(2500, 2150, 15, 2000, {isStatic:true})
+var tunnelRight = Bodies.rectangle(2700, 2150, 15, 2000, {isStatic:true})
+
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
 funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2,
-platform, platform2, platform3, platform4, platform5, platform6, platform7, platform8])
+platform, platform2, platform4, platform5, platform6, platform7, platform8, base, tunnelLeft, tunnelRight])
 for(var i =0;i<pegs.length;i++)(
     Composite.add(engine.world,[pegs[i]])
 )
-//create ball being launched
-
+//create reverse gravity tunnel
 setTimeout(() => {
     fireCannon();
 }, 3000);
@@ -132,12 +136,18 @@ setTimeout(() => {
 //     max: { x: ______, y: __________}
 // });
 function setup(){
+
 }
 function fireCannon(){
     console.log("fired")
     Body.applyForce(ball, ball.position, {x: 0.15, y:-0.15})
     followCamera(ball)
 }
+//add a way to zoom in and out with scrolll wheeeeell
+
+
+
+
 
 function followCamera(b){
     var start = new Date();
@@ -146,10 +156,14 @@ function followCamera(b){
             min: { x: b.position.x-750 , y: b.position.y-300},
             max: { x: b.position.x + 750, y: b.position.y+300}
         });
-
+        if(Collision.collides(b, tunnelRight)){
+            engine.gravity.y = -1;
+            engine.gravity.x = 0;
+        }
+        if(Collision.collides(b,platform8)){
+            engine.gravity.x = 0.5;
+        }
         //clear interval and re-call function whenever you want to follow a different object.
 
-    }, 1)
-    
-    
+    }, 1)  
 }
