@@ -25,10 +25,10 @@ var runner = Runner.create();
 Runner.run(runner, engine)
 
 //create cannon
-var cannonside1 = Bodies.rectangle(90, 410, 265, 20, {isStatic:true})
+var cannonside1 = Bodies.rectangle(90, 410, 300, 20, {isStatic:true})
 var cannonside2 = Bodies.rectangle(120, 480, 300, 20, {isStatic:true})
 var end = Bodies.rectangle(10, 520, 45, 45, {isStatic:true})
-var ball = Bodies.polygon(170, 390, 25, 25, {restitution: 0.8})
+var ball = Bodies.polygon(170, 390, 25, 25, {restitution: 0.8, friction: .05})
 Body.rotate(cannonside1, 2.5);
 Body.rotate(cannonside2, 2.5)
 Body.rotate(end, 2.5)
@@ -98,15 +98,25 @@ Body.rotate(wall2,2.5)
 Body.rotate(wall3,-2.5)
 Body.rotate(wall4,2.5)
 //create the ramps
-// var platform = Bodies.rectangle(1000, 1400, 300, 20, {isStatic:true})
-// var platform2 = Bodies.rectangle(700, 1500, 300, 20, {isStatic:true})
-// var platform3 = Bodies.rectangle(400, 1500, 300, 20, {isStatic:true})
-// var platform4 = Bodies.rectangle(200, 1550, 300, 20, {isStatic:true})
-// Body.rotate(platform,2.5)
-// Body.rotate(platform4,-2)
-// , platform, platform2, platform3, platform4
+var platform6 = Bodies.rectangle(1420, 2805, 580, 20, {isStatic:true})
+var platform = Bodies.rectangle(1000, 2920, 300, 20, {isStatic:true})
+var platform2 = Bodies.rectangle(720, 3000, 300, 20, {isStatic:true})
+var platform3 = Bodies.rectangle(420, 3030, 300, 20, {isStatic:true})
+var platform4 = Bodies.rectangle(120, 3050, 300, 20, {isStatic:true})
+var platform5 = Bodies.rectangle(320, 3300, 300, 20, {isStatic:true})
+var platform7 = Bodies.rectangle(560, 3400, 300, 20, {isStatic:true})
+var platform8 = Bodies.rectangle(850, 3420, 300, 20, {isStatic:true})
+Body.rotate(platform, -.4)
+Body.rotate(platform2, -.1)
+Body.rotate(platform3, -.1)
+Body.rotate(platform4,-2)
+Body.rotate(platform5,-2.5)
+Body.rotate(platform6,-.2)
+Body.rotate(platform7,-3)
+Body.rotate(platform8,0)
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
-funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2])
+funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2,
+platform, platform2, platform3, platform4, platform5, platform6, platform7, platform8])
 for(var i =0;i<pegs.length;i++)(
     Composite.add(engine.world,[pegs[i]])
 )
@@ -121,7 +131,8 @@ setTimeout(() => {
 //     min: { x: ____, y: _________},
 //     max: { x: ______, y: __________}
 // });
-
+function setup(){
+}
 function fireCannon(){
     console.log("fired")
     Body.applyForce(ball, ball.position, {x: 0.15, y:-0.15})
