@@ -36,7 +36,11 @@ Render.lookAt(render, {
     min: { x: ball.position.x - 750 , y: ball.position.y-300},
     max: { x: ball.position.x + 750, y: ball.position.y+300}
 });
-
+// create funnel
+var funnel1 = Bodies.rectangle(1050, 800, 80, 20, {isStatic:true});
+var funnel2 = Bodies.rectangle(950, 800, 80, 20, {isStatic:true});
+Body.rotate(funnel1,-1.2);
+Body.rotate(funnel2,1.2);
 //bouncy walls
 var wall1 = Bodies.rectangle(1050, 130, 50, 150, {isStatic:true})
 var wall2 = Bodies.rectangle(750, 260, 50, 150, {isStatic:true})
@@ -46,12 +50,16 @@ Body.rotate(wall1,-2.5)
 Body.rotate(wall2,2.5)
 Body.rotate(wall3,-2.5)
 Body.rotate(wall4,2.5)
-
-//funnel
-var funellPart1 = Bodies.rectangle(950, 830, 50, 150, {isStatic:true})
-var funellPart2 = Bodies.rectangle(1100, 830, 50, 150, {isStatic:true})
-
-Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4, funellPart1, funellPart2])
+//create the ramps
+// var platform = Bodies.rectangle(1000, 1400, 300, 20, {isStatic:true})
+// var platform2 = Bodies.rectangle(700, 1500, 300, 20, {isStatic:true})
+// var platform3 = Bodies.rectangle(400, 1500, 300, 20, {isStatic:true})
+// var platform4 = Bodies.rectangle(200, 1550, 300, 20, {isStatic:true})
+// Body.rotate(platform,2.5)
+// Body.rotate(platform4,-2)
+// , platform, platform2, platform3, platform4
+Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
+funnel1, funnel2])
 //create ball being launched
 
 setTimeout(() => {
