@@ -39,8 +39,55 @@ Render.lookAt(render, {
 // create funnel
 var funnel1 = Bodies.rectangle(1050, 800, 80, 20, {isStatic:true});
 var funnel2 = Bodies.rectangle(950, 800, 80, 20, {isStatic:true});
+var funnel3 = Bodies.rectangle(1050, 850, 80, 20, {isStatic:true});
+var funnel4 = Bodies.rectangle(950, 850, 80, 20, {isStatic:true});
+var funnel5 = Bodies.rectangle(1050, 900, 80, 20, {isStatic:true});
+var funnel6 = Bodies.rectangle(950, 900, 80, 20, {isStatic:true});
+var funnel7 = Bodies.rectangle(1048, 950, 80, 20, {isStatic:true});
+var funnel8 = Bodies.rectangle(948, 950, 80, 20, {isStatic:true});
 Body.rotate(funnel1,-1.2);
 Body.rotate(funnel2,1.2);
+Body.rotate(funnel3,-1.2);
+Body.rotate(funnel4,1.2);
+Body.rotate(funnel5,-1.2);
+Body.rotate(funnel6,1.2);
+Body.rotate(funnel7,-1.2);
+Body.rotate(funnel8,1.2);
+//create pegs for plinkos
+var cols = 10;
+var rows = 10;
+var spacing = 150;
+var pegs = []
+for(var i = 0; i < rows; i++){
+    for(var j = 0; j < cols; j++){
+        var x =   j * spacing + 175;
+        if(i % 2 == 1){
+            x += spacing/2 
+            var y = spacing + i * spacing + 1200
+            var peg =  new Bodies.polygon(x,y,500,20, {isStatic:true})
+            // var peg = new Peg(x, y, 5)
+            pegs.push(peg);
+            
+        }
+        else {
+            if(j != 0){
+                var y = spacing + i * spacing + 1200
+                var peg =  new Bodies.polygon(x,y,500,20, {isStatic:true})
+                pegs.push(peg);
+
+            }
+        }
+
+
+    }
+}
+//creates the boundaries for plinkos
+var boundary1 = Bodies.rectangle(175, 2050, 1450, 20, {isStatic:true});
+var boundary2 = Bodies.rectangle(1700, 2050, 1450, 20, {isStatic:true});
+
+Body.rotate(boundary1,Math.PI/2)
+Body.rotate(boundary2,Math.PI/2)
+
 //bouncy walls
 var wall1 = Bodies.rectangle(1050, 130, 50, 150, {isStatic:true})
 var wall2 = Bodies.rectangle(750, 260, 50, 150, {isStatic:true})
@@ -59,7 +106,10 @@ Body.rotate(wall4,2.5)
 // Body.rotate(platform4,-2)
 // , platform, platform2, platform3, platform4
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
-funnel1, funnel2])
+funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2])
+for(var i =0;i<pegs.length;i++)(
+    Composite.add(engine.world,[pegs[i]])
+)
 //create ball being launched
 
 setTimeout(() => {
