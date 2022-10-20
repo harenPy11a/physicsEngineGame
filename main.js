@@ -38,22 +38,23 @@ Render.lookAt(render, {
     max: { x: ball.position.x + 750, y: ball.position.y+300}
 });
 // create funnel
-var funnel1 = Bodies.rectangle(1050, 800, 80, 20, {isStatic:true});
-var funnel2 = Bodies.rectangle(950, 800, 80, 20, {isStatic:true});
-var funnel3 = Bodies.rectangle(1050, 850, 80, 20, {isStatic:true});
-var funnel4 = Bodies.rectangle(950, 850, 80, 20, {isStatic:true});
-var funnel5 = Bodies.rectangle(1050, 900, 80, 20, {isStatic:true});
-var funnel6 = Bodies.rectangle(950, 900, 80, 20, {isStatic:true});
-var funnel7 = Bodies.rectangle(1048, 950, 80, 20, {isStatic:true});
-var funnel8 = Bodies.rectangle(948, 950, 80, 20, {isStatic:true});
-Body.rotate(funnel1,-1.2);
-Body.rotate(funnel2,1.2);
+var funnel1 = Bodies.rectangle(1075, 790, 80, 20, {isStatic:true});
+var funnel2 = Bodies.rectangle(925, 790, 80, 20, {isStatic:true});
+var funnel3 = Bodies.rectangle(1070, 840, 80, 20, {isStatic:true});
+var funnel4 = Bodies.rectangle(930, 840, 80, 20, {isStatic:true});
+var funnel5 = Bodies.rectangle(1065, 890, 80, 20, {isStatic:true});
+var funnel6 = Bodies.rectangle(935, 890, 80, 20, {isStatic:true});
+var funnel7 = Bodies.rectangle(1060, 940, 80, 20, {isStatic:true});
+var funnel8 = Bodies.rectangle(940, 940, 80, 20, {isStatic:true});
+
+Body.rotate(funnel1,-1.3);
+Body.rotate(funnel2,1.3);
 Body.rotate(funnel3,-1.2);
 Body.rotate(funnel4,1.2);
-Body.rotate(funnel5,-1.2);
-Body.rotate(funnel6,1.2);
-Body.rotate(funnel7,-1.2);
-Body.rotate(funnel8,1.2);
+Body.rotate(funnel5,-1.1);
+Body.rotate(funnel6,1.1);
+Body.rotate(funnel7,-1.0);
+Body.rotate(funnel8,1.0);
 //create pegs for plinkos
 var cols = 10;
 var rows = 10;
@@ -79,7 +80,6 @@ for(var i = 0; i < rows; i++){
             }
         }
 
-
     }
 }
 //creates the boundaries for plinkos
@@ -99,29 +99,29 @@ Body.rotate(wall2,2.5)
 Body.rotate(wall3,-2.5)
 Body.rotate(wall4,2.5)
 //create the ramps
-var platform6 = Bodies.rectangle(1420, 2830, 580, 20, {isStatic:true, friction: -10})
-var platform = Bodies.rectangle(1000, 3000, 300, 20, {isStatic:true, friction: -10})
-var platform2 = Bodies.rectangle(700, 3090, 300, 20, {isStatic:true, friction: -10})
+var platform = Bodies.rectangle(1420, 2880, 580, 20, {isStatic:true, friction: -10})
+var platform2 = Bodies.rectangle(1000, 3050, 300, 20, {isStatic:true, friction: -10})
+var platform3 = Bodies.rectangle(700, 3140, 300, 20, {isStatic:true, friction: -10})
 var platform4 = Bodies.rectangle(120, 3070, 300, 20, {isStatic:true, friction: -10})
 var platform5 = Bodies.rectangle(320, 3300, 300, 20, {isStatic:true, friction: -10})
-var platform7 = Bodies.rectangle(580, 3415, 300, 20, {isStatic:true, friction: -10})
-var platform8 = Bodies.rectangle(1070, 3500, 700, 20, {isStatic:true, friction: 0})
-Body.rotate(platform, -0.2)
-Body.rotate(platform2, -.3)
+var platform6 = Bodies.rectangle(580, 3435, 300, 20, {isStatic:true, friction: -10})
+var platform7 = Bodies.rectangle(1070, 3500, 700, 20, {isStatic:true, friction: 0})
+Body.rotate(platform,-.5)
+Body.rotate(platform2, -0.2)
+Body.rotate(platform3, -.3)
 Body.rotate(platform4,-2.2)
 Body.rotate(platform5,.7)
-Body.rotate(platform6,-.5)
-Body.rotate(platform7,.2)
-Body.rotate(platform8,.1)
+Body.rotate(platform6,.2)
+Body.rotate(platform7,.1)
 
 //add reverse gravity tunnel;
-var base = Bodies.rectangle(1900, 4000, 750, 20, {isStatic:true})
-var tunnelLeft = Bodies.rectangle(2500, 2150, 15, 2000, {isStatic:true})
-var tunnelRight = Bodies.rectangle(2700, 2150, 15, 2000, {isStatic:true})
+var base = Bodies.rectangle(2000, 4000, 750, 20, {isStatic:true, friction:10})
+var tunnelLeft = Bodies.rectangle(2300, 3180, 15, 1500, {isStatic:true})
+var tunnelRight = Bodies.rectangle(2400, 3170, 15, 1700, {isStatic:true})
 
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
 funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2,
-platform, platform2, platform4, platform5, platform6, platform7, platform8, base, tunnelLeft, tunnelRight])
+platform, platform2, platform3,platform4, platform5, platform6, platform7, base, tunnelLeft, tunnelRight])
 for(var i =0;i<pegs.length;i++)(
     Composite.add(engine.world,[pegs[i]])
 )
@@ -160,8 +160,26 @@ function followCamera(b){
             engine.gravity.y = -1;
             engine.gravity.x = 0;
         }
-        if(Collision.collides(b,platform8)){
-            engine.gravity.x = 0.5;
+        if(Collision.collides(b,platform)){
+            engine.gravity.x = 0.25;
+        }
+        if(Collision.collides(b,platform2)){
+            engine.gravity.x = -0.25;
+        }
+        if(Collision.collides(b,platform3)){
+            engine.gravity.x = -0.25;
+        }
+        if(Collision.collides(b,platform4)){
+            engine.gravity.x = 0.25;
+        }
+        if(Collision.collides(b,platform5)){
+            engine.gravity.x = 0.25;
+        }
+        if(Collision.collides(b,platform6)){
+            engine.gravity.x = 0.25;
+        }
+        if(Collision.collides(b,platform7)){
+            engine.gravity.x = 0.65;
         }
         //clear interval and re-call function whenever you want to follow a different object.
 
