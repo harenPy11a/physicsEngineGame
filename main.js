@@ -36,10 +36,10 @@ Body.rotate(end, 2.5)
 Render.lookAt(render, {
     min: { x: ball.position.x - 750 , y: ball.position.y-300},
     max: { x: ball.position.x + 750, y: ball.position.y+300}
-});
+});  
 // create funnel
-var funnel1 = Bodies.rectangle(1075, 790, 80, 20, {isStatic:true});
-var funnel2 = Bodies.rectangle(925, 790, 80, 20, {isStatic:true});
+var funnel1 = Bodies.rectangle(1075, 780, 80, 20, {isStatic:true});
+var funnel2 = Bodies.rectangle(925, 780, 80, 20, {isStatic:true});
 var funnel3 = Bodies.rectangle(1070, 840, 80, 20, {isStatic:true});
 var funnel4 = Bodies.rectangle(930, 840, 80, 20, {isStatic:true});
 var funnel5 = Bodies.rectangle(1065, 890, 80, 20, {isStatic:true});
@@ -97,16 +97,16 @@ var wall4 = Bodies.rectangle(750, 430, 50, 150, {isStatic:true})
 Body.rotate(wall1,-2.5)
 Body.rotate(wall2,2.5)
 Body.rotate(wall3,-2.5)
-Body.rotate(wall4,2.5)
+Body.rotate(wall4,2.5) 
 //create the ramps
 var platform = Bodies.rectangle(1420, 2880, 580, 20, {isStatic:true, friction: -10})
-var platform2 = Bodies.rectangle(1000, 3050, 300, 20, {isStatic:true, friction: -10})
+var platform2 = Bodies.rectangle(1000, 3060, 300, 20, {isStatic:true, friction: -10})
 var platform3 = Bodies.rectangle(700, 3140, 300, 20, {isStatic:true, friction: -10})
 var platform4 = Bodies.rectangle(120, 3070, 300, 20, {isStatic:true, friction: -10})
 var platform5 = Bodies.rectangle(320, 3300, 300, 20, {isStatic:true, friction: -10})
 var platform6 = Bodies.rectangle(580, 3435, 300, 20, {isStatic:true, friction: -10})
 var platform7 = Bodies.rectangle(1070, 3500, 700, 20, {isStatic:true, friction: 0})
-Body.rotate(platform,-.5)
+Body.rotate(platform,-.45)
 Body.rotate(platform2, -0.2)
 Body.rotate(platform3, -.3)
 Body.rotate(platform4,-2.2)
@@ -116,8 +116,8 @@ Body.rotate(platform7,.1)
 
 //add reverse gravity tunnel;
 var base = Bodies.rectangle(2000, 4000, 750, 20, {isStatic:true, friction:10})
-var tunnelLeft = Bodies.rectangle(2300, 3180, 15, 1500, {isStatic:true})
-var tunnelRight = Bodies.rectangle(2400, 3170, 15, 1700, {isStatic:true})
+var tunnelLeft = Bodies.rectangle(2300, 2400, 15, 3070, {isStatic:true})
+var tunnelRight = Bodies.rectangle(2400, 2420, 15, 3200, {isStatic:true})
 
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
 funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2,
@@ -161,7 +161,7 @@ function followCamera(b){
             engine.gravity.x = 0;
         }
         if(Collision.collides(b,platform)){
-            engine.gravity.x = 0.25;
+            engine.gravity.x = 0.45;
         }
         if(Collision.collides(b,platform2)){
             engine.gravity.x = -0.25;
