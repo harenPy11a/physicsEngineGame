@@ -102,12 +102,13 @@ var wall4 = Bodies.rectangle(780, 430, 50, 150, {isStatic:true, angle:2.5, resti
 // Body.rotate(wall4,2.5) 
 //create the ramps
 var platform = Bodies.rectangle(1420, 2880, 580, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.45})
-var platform2 = Bodies.rectangle(1000, 3040, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3})
+var platform2 = Bodies.rectangle(1000, 3050, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3})
 var platform3 = Bodies.rectangle(700, 3140, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3})
 var platform4 = Bodies.rectangle(120, 3070, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -2.2})
 var platform5 = Bodies.rectangle(320, 3300, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .7})
 var platform6 = Bodies.rectangle(580, 3435, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .2})
 var platform7 = Bodies.rectangle(1070, 3500, 700, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .1})
+
 // Body.rotate(platform,-.45)
 // Body.rotate(platform2, -0.2)
 // Body.rotate(platform3, -.3)
@@ -117,20 +118,21 @@ var platform7 = Bodies.rectangle(1070, 3500, 700, 20, {isStatic:true, friction: 
 // Body.rotate(platform7,.1)
 
 //add reverse gravity tunnel;
-var base = Bodies.rectangle(2000, 3970, 800, 20, {isStatic:true, friction:0, angle: .2})
-var tunnelLeft = Bodies.rectangle(2300, 2400, 15, 3070, {isStatic:true})
+var base = Bodies.rectangle(2000, 3950, 800, 20, {isStatic:true, friction: 0, angle: .2})
+var tunnelLeft = Bodies.rectangle(2300, 2410, 15, 3070, {isStatic:true})
 var tunnelRight = Bodies.rectangle(2400, 2420, 15, 3200, {isStatic:true})
 // seasaw
-var baseOfSeasaw = Bodies.rectangle(2450, 450, 500, 15, {isStatic:true, mass: .05})
-var seaSaw = Bodies.rectangle(2450, 550, 500, 15, {isStatic:false})
-var block = Bodies.rectangle(2670, 620, 50, 50, {isStatic:true, mass:.000001})
+var baseOfSeasaw = Bodies.rectangle(2450, 450, 500, 15, {isStatic:true, friction: 0})
+var seaSaw = Bodies.rectangle(2450, 550, 400, 15, {isStatic:false})
+var block = Bodies.polygon(2670, 620, 50, 50, {isStatic:true, mass:1, friction: 0, restitution: 0.8 })
+//after seasaw
+var revRamp = Bodies.rectangle(3000, 250, 700, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.5})
 
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
     funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2,
     platform, platform2, platform3,platform4, platform5, platform6, platform7, base, tunnelLeft, tunnelRight, baseOfSeasaw, seaSaw, block,
-
-    Constraint.create({ bodyA: seaSaw, pointB: { x: 2350, y: 450 }}), 
-    Constraint.create({ bodyA: seaSaw, pointB: { x: 2550, y: 450 }}) 
+    revRamp, 
+    Constraint.create({ bodyA: seaSaw, pointB: { x: 2450, y: 550 }}) 
 
 ])
     for(var i =0;i<pegs.length;i++){
@@ -173,12 +175,16 @@ function followCamera(b){
         }
         if(Collision.collides(b,platform7)){
             // engine.gravity.x = 0.65;
-            Body.applyForce(ball, ball.position, {x: 0.005, y:0})
+            Body.applyForce(ball, ball.position, {x: 0.0009, y:0})
             
         }
         if(Collision.collides(b,seaSaw)){
             Composite.remove(engine.world,[ball])
             followCamera(block)
+            
+        }
+        if(Collision.collides(block, revRamp)){
+            revRamp.mass = 1;
         }
         //clear interval and re-call function whenever you want to follow a different object.
 
