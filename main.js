@@ -39,13 +39,13 @@ Render.lookAt(render, {
     max: { x: ball.position.x + 750, y: ball.position.y+300}
 });  
 // create funnel
-var funnel1 = Bodies.rectangle(1075, 780, 80, 20, {isStatic:true, angle: -1.3});
+var funnel1 = Bodies.rectangle(1075+20, 780, 80, 20, {isStatic:true, angle: -1.3});
 var funnel2 = Bodies.rectangle(925, 780, 80, 20, {isStatic:true, angle:1.3});
-var funnel3 = Bodies.rectangle(1070, 840, 80, 20, {isStatic:true, angle:-1.2});
+var funnel3 = Bodies.rectangle(1070+15, 840, 80, 20, {isStatic:true, angle:-1.2});
 var funnel4 = Bodies.rectangle(930, 840, 80, 20, {isStatic:true, angle:1.2});
-var funnel5 = Bodies.rectangle(1065, 890, 80, 20, {isStatic:true, angle:-1.1});
+var funnel5 = Bodies.rectangle(1065+10, 890, 80, 20, {isStatic:true, angle:-1.1});
 var funnel6 = Bodies.rectangle(935, 890, 80, 20, {isStatic:true, angle:1.1});
-var funnel7 = Bodies.rectangle(1060, 940, 80, 20, {isStatic:true, angle:-1.0});
+var funnel7 = Bodies.rectangle(1060+5, 940, 80, 20, {isStatic:true, angle:-1.0});
 var funnel8 = Bodies.rectangle(940, 940, 80, 20, {isStatic:true, angle:1.0});
 
 // Body.rotate(funnel1,);
@@ -95,7 +95,7 @@ var boundary2 = Bodies.rectangle(1700, 2050, 1450, 20, {isStatic:true, angle: Ma
 var wall1 = Bodies.rectangle(1050, 130, 50, 150, {isStatic:true, angle:-2.5, restitution:1.3})
 var wall2 = Bodies.rectangle(780, 250, 50, 150, {isStatic:true, angle:2.5, restitution:1.3})
 var wall3 = Bodies.rectangle(1080, 350, 50, 150, {isStatic:true, angle:-2.5, restitution:1.3})
-var wall4 = Bodies.rectangle(780, 430, 50, 150, {isStatic:true, angle:2.5, restitution:1.3})
+var wall4 = Bodies.rectangle(780, 430, 50, 150, {isStatic:true, angle:2.4, restitution:1.3})
 // Body.rotate(wall1,)
 // Body.rotate(wall2,2.5)
 // Body.rotate(wall3,-2.5)
@@ -123,10 +123,10 @@ var tunnelLeft = Bodies.rectangle(2300, 2410, 15, 3070, {isStatic:true})
 var tunnelRight = Bodies.rectangle(2400, 2420, 15, 3200, {isStatic:true})
 // seasaw
 var baseOfSeasaw = Bodies.rectangle(2450, 450, 500, 15, {isStatic:true, friction: 0})
-var seaSaw = Bodies.rectangle(2450, 550, 400, 15, {isStatic:false})
-var block = Bodies.polygon(2670, 620, 50, 50, {isStatic:true, mass:1, friction: 0, restitution: 0.8 })
+var seaSaw = Bodies.rectangle(2450, 550, 400, 15, {isStatic:false, friction: 0})
+var block = Bodies.polygon(2660, 600, 25, 25, {isStatic:true, mass:1, friction: 0, restitution: 0.8 })
 //after seasaw
-var revRamp = Bodies.rectangle(3000, 250, 700, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.5})
+var revRamp = Bodies.rectangle(3300, 250, 1000, 20, {isStatic:true, friction: 0, angle: -.5})
 
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
     funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2,
@@ -171,7 +171,7 @@ function followCamera(b){
         if(Collision.collides(b, tunnelRight)){
             engine.gravity.y = -1;
             engine.gravity.x = 0;
-            block.isStatic = false;
+            // block.isStatic = false;
         }
         if(Collision.collides(b,platform7)){
             // engine.gravity.x = 0.65;
@@ -179,12 +179,13 @@ function followCamera(b){
             
         }
         if(Collision.collides(b,seaSaw)){
+            block.isStatic = false;
             Composite.remove(engine.world,[ball])
             followCamera(block)
             
         }
-        if(Collision.collides(block, revRamp)){
-            revRamp.mass = 1;
+        if(Collision.collides(b, revRamp)){
+            Body.setMass(b, 100)
         }
         //clear interval and re-call function whenever you want to follow a different object.
 
