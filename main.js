@@ -62,7 +62,7 @@ var funnel5 = Bodies.rectangle(1065+10, 890, 80, 20, {isStatic:true, angle:-1.1}
 var funnel6 = Bodies.rectangle(935, 890, 80, 20, {isStatic:true, angle:1.1});
 var funnel7 = Bodies.rectangle(1060+5, 940, 80, 20, {isStatic:true, angle:-1.0});
 var funnel8 = Bodies.rectangle(940, 940, 80, 20, {isStatic:true, angle:1.0});
-
+var funnels = []
 // Body.rotate(funnel1,);
 // Body.rotate(funnel2,);
 // Body.rotate(funnel3,);
@@ -139,24 +139,51 @@ var tunnelRight = Bodies.rectangle(2400, 2420, 15, 3200, {isStatic:true})
 // seasaw
 var baseOfSeasaw = Bodies.rectangle(2450, 450, 500, 15, {isStatic:true, friction: 0})
 var seaSaw = Bodies.rectangle(2450, 550, 400, 15, {isStatic:false, friction: 0})
-var block = Bodies.polygon(2660, 600, 25, 25, {isStatic:true, mass:1, friction: 0, restitution: 0.8 })
+var block = Bodies.polygon(2665, 590, 25, 25, {isStatic:true, mass:.5, friction: 0, restitution: 0.8 })
 //after seasaw
-var revRamp = Bodies.rectangle(3300, 250, 1000, 20, {isStatic:true, friction: 0, angle: -.5})
+var revRamp = Bodies.rectangle(3150, 250, 1000, 20, {isStatic:true, friction: 0, angle: -.4})
+
+//create pendulum
+var pendulum = Bodies.polygon(3750, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
+var pendulum2 = Bodies.polygon(3840, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
+var pendulum3 = Bodies.polygon(3930, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
 
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
     funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2,
     platform, platform2, platform3,platform4, platform5, platform6, platform7, base, tunnelLeft, tunnelRight, baseOfSeasaw, seaSaw, block,
-    revRamp, 
-    Constraint.create({ bodyA: seaSaw, pointB: { x: 2450, y: 550 }}) 
+    revRamp, pendulum, pendulum2, pendulum3,
+    Constraint.create({ bodyA: seaSaw, pointB: { x: 2450, y: 550 }}),
+    Constraint.create({
+        pointA: { x: 3750, y: 200},
+        bodyB: pendulum,
+        stiffness: 0.9,
+        render: {
+            strokeStyle: "#4a485b"
+        }
+    }),
+    Constraint.create({
+        pointA: { x: 3840, y: 200},
+        bodyB: pendulum2,
+        stiffness: 0.9,
+        render: {
+            strokeStyle: "#4a485b"
+        }
+    }),
+    Constraint.create({
+        pointA: { x: 3930, y: 200},
+        bodyB: pendulum3,
+        stiffness: 0.9,
+        render: {
+            strokeStyle: "#4a485b"
+        }
+    })
 
 ])
     for(var i =0;i<pegs.length;i++){
         Composite.add(engine.world,[pegs[i]])
     }
-//create reverse gravity tunnel
-function setup(){
 
-}
+//create reverse gravity tunnel
 setTimeout(() => {
     fireCannon();
 }, 3600);
@@ -166,10 +193,10 @@ setTimeout(() => {
 //     min: { x: ____, y: _________},
 //     max: { x: ______, y: __________}
 // });
-
+var particles = [];
 function fireCannon(){
     console.log("fired")
-    Body.applyForce(ball, ball.position, {x: 0.75, y:-0.75})
+    Body.applyForce(ball, ball.position, {x: 1.75, y:-0.75})
     followCamera(ball)
 }
 //add a way to zoom in and out with scrolll wheeeeell
@@ -186,6 +213,7 @@ function followCamera(b){
         if(Collision.collides(b, tunnelRight)){
             engine.gravity.y = -1;
             engine.gravity.x = 0;
+            Body.setMass(b, 20)
             // block.isStatic = false;
         }
         if(Collision.collides(b,platform7)){
@@ -196,11 +224,14 @@ function followCamera(b){
         if(Collision.collides(b,seaSaw)){
             block.isStatic = false;
             Composite.remove(engine.world,[ball])
+            // Body.applyForce(block, block.position, {x: 0.01, y:0})
             followCamera(block)
             
         }
         if(Collision.collides(b, revRamp)){
-            Body.setMass(b, 100)
+            b.friction = 0;
+            b.mass = 10
+            
         }
         //clear interval and re-call function whenever you want to follow a different object.
 
