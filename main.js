@@ -25,6 +25,21 @@ var render = Render.create({
 Render.run(render);
 var runner = Runner.create();
 Runner.run(runner, engine)
+//mini game objects
+var theBird;
+
+
+var rectPara = Bodies.rectangle(200, -2000, 250, 30)
+var rectSide1 = Bodies.rectangle(115, -1950, 45, 65, {isStatic:true})
+var rectSide2 = Bodies.rectangle(285, -1950, 45, 65, {isStatic:true})
+
+var parachute = Body.create({
+    parts:[rectPara, rectSide1, rectSide2]
+})
+
+Body.setMass(parachute, 10);
+var egg = Bodies.circle(200, -1700, 30);
+Body.setMass(egg,10)
 
 //create cannon
 var cannonside1 = Bodies.rectangle(90, 410, 300, 20, {isStatic:true})
@@ -191,5 +206,7 @@ function followCamera(b){
 
     }, 1)  
 }
+
+
 
 
