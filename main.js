@@ -11,15 +11,20 @@ var events = Matter.events
 var Constraint = Matter.Constraint;
 //create engine
 var engine = Engine.create()
+engine.world.density = 1;
 var render = Render.create({
     element:document.body,
     engine:engine,
     options:{
         hasBounds : true,
+        wireframes: false,
         width: innerWidth,
         height: innerHeight
     }
 })
+
+var theBird;
+var obstacles = [];
 
 //start render
 Render.run(render);
@@ -133,10 +138,57 @@ var pendulum = Bodies.polygon(3750, 0, 45, 45,{frictionAir: 0.001, restitution: 
 var pendulum2 = Bodies.polygon(3840, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
 var pendulum3 = Bodies.polygon(3930, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
 
+var btnOptions = {
+    render: {
+        sprite:{
+            texture: "images/button.png",
+            xScale : 0.042,
+            yScale: 0.042
+        }
+    },
+    isStatic: true
+}
+
+var rectBtnBase = Bodies.rectangle(4040, 10, 10, 70, {isStatic:true})
+
+var btn = Bodies.rectangle(4010, 0, 30, 30, btnOptions)
+
+//////////////////////////////////////////
+var rectPara = Bodies.rectangle(4300, -200, 250, 30)
+var rectSide1 = Bodies.rectangle(4215, -150, 45, 65, {isStatic:true})
+var rectSide2 = Bodies.rectangle(4385, -150, 45, 65, {isStatic:true})
+
+var parachute = Body.create({
+    parts:[rectPara, rectSide1, rectSide2],
+})
+Body.setMass(parachute, 10);
+
+var circle1 = Bodies.circle(4300, 100, 30);
+Body.setMass(circle1,10)
+
+var const1 = Constraint.create({
+    bodyA: rectSide1,
+    bodyB: circle1,
+    length: 300,
+    stiffness: 0.5
+});
+var const2 = Constraint.create({
+    bodyA: rectSide2,
+    bodyB: circle1,
+    length: 300,
+    stiffness: 0.5
+})
+
+var floor = Bodies.rectangle(54100, 7000, 100000, 60, {isStatic:true})
+var upperside = Bodies.rectangle(50600, 5700, 90000, 60, {isStatic:true})
+
+
+//////////////////////////////////
+
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
     funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2,
     platform, platform2, platform3,platform4, platform5, platform6, platform7, base, tunnelLeft, tunnelRight, baseOfSeasaw, seaSaw, block,
-    revRamp, pendulum, pendulum2, pendulum3,
+    revRamp, pendulum, pendulum2, pendulum3, rectBtnBase,btn,floor, upperside,
     Constraint.create({ bodyA: seaSaw, pointB: { x: 2450, y: 550 }}),
     Constraint.create({
         pointA: { x: 3750, y: 200},
@@ -187,9 +239,7 @@ function fireCannon(){
 //add a way to zoom in and out with scrolll wheeeeell
 
 
-
 function followCamera(b){
-    var start = new Date();
     var interval = setInterval(() => {
         Render.lookAt(render, {
             min: { x: b.position.x-750 , y: b.position.y-300},
@@ -210,17 +260,118 @@ function followCamera(b){
             block.isStatic = false;
             Composite.remove(engine.world,[ball])
             // Body.applyForce(block, block.position, {x: 0.01, y:0})
+            clearInterval(interval)
             followCamera(block)
             
         }
         if(Collision.collides(b, revRamp)){
             b.friction = 0;
             b.mass = 10
-            
+        }
+        if(Collision.collides(pendulum3, btn)){
+            engine.gravity.y = 1;
+            Composite.add(engine.world, [parachute, const1, const2, circle1])
+            clearInterval(interval)
+            runParachute(circle1);
         }
         //clear interval and re-call function whenever you want to follow a different object.
-
     }, 1)  
 }
 
+var sOptions = {
+    render: {
+        sprite:{
+            texture: "images/bird.png",
+            xScale: 0.1,
+            yScale: 0.1
+        }
+    }
+}
 
+function runParachute(b){
+    console.log("PARACHUTE STARTED")
+    var interval = setInterval(() => {
+        Render.lookAt(render, {
+            min: { x: b.position.x-1000 , y: b.position.y-1000},
+            max: { x: b.position.x + 1000, y: b.position.y+1000}
+        });
+
+        if(parachute.velocity.y>0){
+            var r2 = parachute.velocity.y * parachute.velocity.y;
+            var k = 0.5* (engine.world.density * (250/95) * 0.82)
+            // Fdrag = -kv^2
+            // plug in k value, and velocity of object squared, as air resistance depends greatly on object velocity
+            Body.applyForce(parachute, parachute.position, {x: 0, y: -(k * r2*0.000001)})
+        }
+        console.log(parachute.position)
+        
+        if(Collision.collides(b, floor)){
+            var obProps = {
+                isStatic:true,
+                render: {
+                    sprite:{
+                        texture: "images/grenade.png",
+                        xScale: 0.2,
+                        yScale: 0.2
+                    }
+                }
+            }
+            theBird = Bodies.rectangle(4300, 6900, 100, 125, sOptions)
+            var start = 8000
+            for(var i = 0; i < 39; i++){
+                var max = 6950
+                var min = 5750 //5550 in real
+                var x = ((Math.random() * (max - min + 1)) + min);
+                obstacles.push(Bodies.rectangle(start, x, 140, 140, obProps))
+                start+=2000
+            }
+            Composite.add(engine.world, theBird)
+            Composite.add(engine.world, obstacles)
+            Composite.remove(engine.world, [parachute, const1, const2,circle1])
+            clearInterval(interval)
+            startGame(theBird);
+        }
+        //clear interval and re-call function whenever you want to follow a different object.
+    }, 1)  
+}
+
+function startGame(theBir){
+    engine.gravity.x = 1;
+    engine.gravity.y = 0;
+
+    var interval = setInterval(() => {
+        console.log("Happened")
+        Render.lookAt(render, {
+            min: { x: theBir.position.x - 1200, y: theBir.position.y - 1200},
+            max: { x: theBir.position.x + 1200, y: theBir.position.y + 1200}
+        });
+        
+        for(var i = 0; i < 40; i++){
+            if(Collision.collides(theBir, obstacles[i])){
+                Composite.remove(engine.world, theBir)
+                //add explosion
+                clearInterval(interval)
+                console.log("UR DONE")
+            }
+        }
+        // add  || Collision.collides(theBir, side1) || Collision.collides(theBir, side2) tp if statement condition
+        if(Collision.collides(theBir, floor) || Collision.collides(theBir, upperside)){
+            Composite.remove(engine.world, theBir)
+            //add explosion
+            clearInterval(interval)
+            console.log("TOP R BOTTOM")
+        }
+    }, 1)
+}
+
+document.onkeydown = checkKey;
+function checkKey(e, temp){
+    if(e.keyCode == '87'){
+        console.log("UP")
+        Body.applyForce(theBird, theBird.position, {x: 0, y: -0.4});
+    }
+    if(e.keyCode == '83'){
+        console.log("DOWN")
+        Body.applyForce(theBird, theBird.position, {x: 0, y: 0.4});
+    }
+}
