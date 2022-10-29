@@ -362,7 +362,7 @@ function startGame(theBir){
         }
     }, 1)
 }
-
+// Sammy 
 document.onkeydown = checkKey;
 function checkKey(e, temp){
     if(e.keyCode == '87'){
