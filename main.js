@@ -30,6 +30,21 @@ var obstacles = [];
 Render.run(render);
 var runner = Runner.create();
 Runner.run(runner, engine)
+//mini game objects
+var theBird;
+
+
+var rectPara = Bodies.rectangle(200, -2000, 250, 30)
+var rectSide1 = Bodies.rectangle(115, -1950, 45, 65, {isStatic:true})
+var rectSide2 = Bodies.rectangle(285, -1950, 45, 65, {isStatic:true})
+
+var parachute = Body.create({
+    parts:[rectPara, rectSide1, rectSide2]
+})
+
+Body.setMass(parachute, 10);
+var egg = Bodies.circle(200, -1700, 30);
+Body.setMass(egg,10)
 
 //create cannon
 var cannonside1 = Bodies.rectangle(90, 410, 300, 20, {isStatic:true})
@@ -287,6 +302,7 @@ var sOptions = {
     }
 }
 
+<<<<<<< HEAD
 function runParachute(b){
     var interval = setInterval(() => {
         Render.lookAt(render, {
@@ -554,3 +570,7 @@ Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, 
     }, 3600);
 
 }
+=======
+
+
+>>>>>>> 0b5c2fe8d7dfe315ea1b002a14f5a0a1b45a6ec9
