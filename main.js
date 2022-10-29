@@ -302,7 +302,7 @@ var sOptions = {
     }
 }
 
-<<<<<<< HEAD
+
 function runParachute(b){
     var interval = setInterval(() => {
         Render.lookAt(render, {
@@ -569,8 +569,6 @@ Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, 
         fireCannon();
     }, 3600);
 
+    
 }
-=======
 
-
->>>>>>> 0b5c2fe8d7dfe315ea1b002a14f5a0a1b45a6ec9
