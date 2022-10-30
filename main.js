@@ -23,7 +23,6 @@ var render = Render.create({
     }
 })
 
-var theBird;
 var obstacles = [];
 
 //start render
@@ -267,7 +266,7 @@ function followCamera(b){
         }
         if(Collision.collides(b,platform7)){
             // engine.gravity.x = 0.65;
-            Body.applyForce(ball, ball.position, {x: 0.0009, y:0})
+            Body.applyForce(ball, ball.position, {x: 0.001, y:0})
             
         }
         if(Collision.collides(b,seaSaw)){
@@ -362,21 +361,52 @@ function startGame(theBir){
             if(Collision.collides(theBir, obstacles[i])){
                 Composite.remove(engine.world, theBir)
                 //add explosion
-                clearInterval(interval)
+                explode(theBir);
+                theBir = null;
+                setTimeout(() => {
+                    clearInterval(interval)
+                    restartSim()
+                }, 2000);
                 
-                
-                restartSim()
             }
         }
         // || Collision.collides(theBir, side1) || Collision.collides(theBir, side2) tp if statement condition
         if(Collision.collides(theBir, floor) || Collision.collides(theBir, upperside)){
             Composite.remove(engine.world, theBir)
+            explode(theBir);
+            theBir = null;
             //add explosion
-            clearInterval(interval)
-
-            restartSim()
+            setTimeout(() => {
+                clearInterval(interval)
+                restartSim()
+            }, 2000);
         }
     }, 1)
+}
+//explosion
+var particles = [];
+var exOptions = {
+    render: {
+        sprite:{
+            texture: "images/BaldEagleFeathers.png",
+            xScale: .045,
+            yScale: .045,
+        }
+    }
+}
+function explode(b){
+    particles.splice(0, particles.length-1);
+    for ( var i = 0; i< 50; i++){
+        particles.push(Bodies.rectangle(b.position.x, b.position.y, 20, 20, {mass:10}))
+    }
+    particles.forEach(element => {
+        Composite.add(engine.world,[element])
+        Body.applyForce(element, element.position, {x: randomIntFromInterval(-1, 1), y: randomIntFromInterval(-1, 1)})
+    });
+    
+}
+function randomIntFromInterval(min, max) { // min and max included 
+    return Math.random() * (max - min + 1) + min
 }
 // Sammy 
 document.onkeydown = checkKey;
@@ -568,6 +598,7 @@ Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, 
     setTimeout(() => {
         fireCannon();
     }, 3600);
+
 
     
 }
