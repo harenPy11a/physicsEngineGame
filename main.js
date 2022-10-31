@@ -9,6 +9,19 @@ var Bounds = Matter.Bounds
 var Collision = Matter.Collision
 var events = Matter.events
 var Constraint = Matter.Constraint;
+var Mouse = Matter.mouse;
+var Engine = Matter.Engine,
+        Events=Matter.Events,
+        Render=Matter.Redner,
+        Runner=Matter.Runner,
+        Body=Matter.Body,
+        Composite=Matter.Composite,
+        Composites=Matter.Composites,
+        Constraint=Matter.Constraint,
+        MouseConstraint=Matter.MouseConstraint,
+        Mouse=Matter.Mouse,
+        Bodies=Matter.Bodies,
+        Vector=Matter.Vector;
 //create engine
 var engine = Engine.create()
 engine.world.density = 1;
@@ -24,11 +37,84 @@ var render = Render.create({
 })
 
 var obstacles = [];
-
+var scaleFactor;
 //start render
 Render.run(render);
 var runner = Runner.create();
 Runner.run(runner, engine)
+
+var first = true;
+var second = false;
+var third = false;
+
+//add mouse control
+var mouse = Mouse.create(render.canvas),
+mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse, 
+    constraint: {
+        stiffness:0.2,
+        render: {
+            visible: false
+        }
+    }
+})
+//mouse in sync with render
+render.mouse = mouse;
+
+//keep track of current bounds scale (view zoom)
+var boundsScaleTarget = 1,
+boundsScale = {
+    x:1,
+    y:1
+};
+//use redner event to control our view
+Events.on(render, 'beforeRender',function(){
+    var mouse = mouseConstraint.mouse, translate;
+    //mouse Wheel controls zoom
+    scaleFactor = mouse.wheelDelta*-0.2;
+    if (scaleFactor!==0){
+        if((scaleFactor<0 && boundsScale.x>=0.6)|| (scaleFactor>0 && boundsScale.x<=1.4)){
+            boundsScale+= scaleFactor;
+        }
+    }
+    //if scale has changed
+    if(Math.abs(boundsScale.x-boundsScaleTarget)>0.01){
+        scaleFactor = (boundsScaleTarget-boundsScale.x)*0.2;
+        boundsScale.x += scaleFactor;
+        boundsScale.y += scaleFactor;
+
+        if(first==true){
+            render.bounds.max.x = ball.position.x+((render.options.width/2)*boundsScale.x);
+            render.bounds.max.y = ball.position.y+((render.options.height/2)*boundsScale.x);
+            render.bounds.min.x = ball.position.x-((render.options.width/2)*boundsScale.x);
+            render.bounds.min.y = ball.position.y-((render.options.height/2)*boundsScale.x);
+            console.log("First");
+        }else if(second==true){
+            render.bounds.max.x = block.position.x+((render.options.width/2)*boundsScale.x);
+            render.bounds.max.y = block.position.y+((render.options.height/2)*boundsScale.x);
+            render.bounds.min.x = block.position.x-((render.options.width/2)*boundsScale.x);
+            render.bounds.min.y = block.position.y-((render.options.height/2)*boundsScale.x);
+            console.log("Second");
+        }else if(third==true){
+            render.bounds.max.x = theBird.position.x+((render.options.width/2)*boundsScale.x);
+            render.bounds.max.y = theBird.position.y+((render.options.height/2)*boundsScale.x);
+            render.bounds.min.x = theBird.position.x-((render.options.width/2)*boundsScale.x);
+            render.bounds.min.y = theBird.position.y-((render.options.height/2)*boundsScale.x);
+            console.log("Third");
+        }
+        translate = {
+            x:render.options.width*scaleFactor*-0.5,
+            y:render.options.height*scaleFactor*-0.5
+        };
+        Bounds.translate(render.bounds, translate);
+        //update Mouse
+        Mouse.setScale(mouse, boundsScale);    
+        Mouse.setOffset(mouse, render.bounds.min);
+    }
+});
+
+
+
 //mini game objects
 var theBird;
 
@@ -602,4 +688,3 @@ Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, 
 
     
 }
-
