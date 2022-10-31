@@ -11,17 +11,17 @@ var events = Matter.events
 var Constraint = Matter.Constraint;
 var Mouse = Matter.mouse;
 var Engine = Matter.Engine,
-        Events=Matter.Events,
-        Render=Matter.Redner,
-        Runner=Matter.Runner,
-        Body=Matter.Body,
-        Composite=Matter.Composite,
-        Composites=Matter.Composites,
-        Constraint=Matter.Constraint,
-        MouseConstraint=Matter.MouseConstraint,
-        Mouse=Matter.Mouse,
-        Bodies=Matter.Bodies,
-        Vector=Matter.Vector;
+        Events = Matter.Events,
+        Render = Matter.Render,
+        Runner = Matter.Runner,
+        Body = Matter.Body,
+        Composite = Matter.Composite,
+        Composites = Matter.Composites,
+        Constraint = Matter.Constraint,
+        MouseConstraint = Matter.MouseConstraint,
+        Mouse = Matter.Mouse,
+        Bodies = Matter.Bodies,
+        Vector = Matter.Vector;
 //create engine
 var engine = Engine.create()
 engine.world.density = 1;
@@ -35,84 +35,105 @@ var render = Render.create({
         height: innerHeight
     }
 })
-
 var obstacles = [];
 var scaleFactor;
+
 //start render
 Render.run(render);
 var runner = Runner.create();
 Runner.run(runner, engine)
-
 var first = true;
 var second = false;
-var third = false;
+var third  = false;
 
-//add mouse control
+///////////////////////////////////////////////////////////////////////////////////
+
+// add mouse control
 var mouse = Mouse.create(render.canvas),
 mouseConstraint = MouseConstraint.create(engine, {
-    mouse: mouse, 
+    mouse: mouse,
     constraint: {
-        stiffness:0.2,
+        stiffness: 0.2,
         render: {
             visible: false
         }
     }
-})
-//mouse in sync with render
-render.mouse = mouse;
-
-//keep track of current bounds scale (view zoom)
-var boundsScaleTarget = 1,
-boundsScale = {
-    x:1,
-    y:1
-};
-//use redner event to control our view
-Events.on(render, 'beforeRender',function(){
-    var mouse = mouseConstraint.mouse, translate;
-    //mouse Wheel controls zoom
-    scaleFactor = mouse.wheelDelta*-0.2;
-    if (scaleFactor!==0){
-        if((scaleFactor<0 && boundsScale.x>=0.6)|| (scaleFactor>0 && boundsScale.x<=1.4)){
-            boundsScale+= scaleFactor;
-        }
-    }
-    //if scale has changed
-    if(Math.abs(boundsScale.x-boundsScaleTarget)>0.01){
-        scaleFactor = (boundsScaleTarget-boundsScale.x)*0.2;
-        boundsScale.x += scaleFactor;
-        boundsScale.y += scaleFactor;
-
-        if(first==true){
-            render.bounds.max.x = ball.position.x+((render.options.width/2)*boundsScale.x);
-            render.bounds.max.y = ball.position.y+((render.options.height/2)*boundsScale.x);
-            render.bounds.min.x = ball.position.x-((render.options.width/2)*boundsScale.x);
-            render.bounds.min.y = ball.position.y-((render.options.height/2)*boundsScale.x);
-            console.log("First");
-        }else if(second==true){
-            render.bounds.max.x = block.position.x+((render.options.width/2)*boundsScale.x);
-            render.bounds.max.y = block.position.y+((render.options.height/2)*boundsScale.x);
-            render.bounds.min.x = block.position.x-((render.options.width/2)*boundsScale.x);
-            render.bounds.min.y = block.position.y-((render.options.height/2)*boundsScale.x);
-            console.log("Second");
-        }else if(third==true){
-            render.bounds.max.x = theBird.position.x+((render.options.width/2)*boundsScale.x);
-            render.bounds.max.y = theBird.position.y+((render.options.height/2)*boundsScale.x);
-            render.bounds.min.x = theBird.position.x-((render.options.width/2)*boundsScale.x);
-            render.bounds.min.y = theBird.position.y-((render.options.height/2)*boundsScale.x);
-            console.log("Third");
-        }
-        translate = {
-            x:render.options.width*scaleFactor*-0.5,
-            y:render.options.height*scaleFactor*-0.5
-        };
-        Bounds.translate(render.bounds, translate);
-        //update Mouse
-        Mouse.setScale(mouse, boundsScale);    
-        Mouse.setOffset(mouse, render.bounds.min);
-    }
 });
 
+
+// keep the mouse in sync with rendering
+render.mouse = mouse;
+
+
+// keep track of current bounds scale (view zoom)
+var boundsScaleTarget = 1,
+boundsScale = {
+x: 1,
+y: 1
+};
+
+// use a render event to control our view
+Events.on(render, 'beforeRender', function() {
+var mouse = mouseConstraint.mouse,
+translate;
+
+// mouse wheel controls zoom
+scaleFactor = mouse.wheelDelta * -0.2;
+if (scaleFactor !== 0) {
+if ((scaleFactor < 0 && boundsScale.x >= 0.6) || (scaleFactor > 0 && boundsScale.x <= 1.4)) {
+    boundsScaleTarget += scaleFactor;
+}
+}
+
+// if scale has changed
+if (Math.abs(boundsScale.x - boundsScaleTarget) > 0.01) {
+// smoothly tween scale factor
+scaleFactor = (boundsScaleTarget - boundsScale.x) * 0.2;
+boundsScale.x += scaleFactor;
+boundsScale.y += scaleFactor;
+
+// scale the render bounds
+
+
+if (first==true){
+    render.bounds.max.x = ball.position.x + ((render.options.width/2) * boundsScale.x);
+    render.bounds.max.y = ball.position.y + ((render.options.height/2) * boundsScale.x);
+
+    render.bounds.min.x = ball.position.x - (render.options.width/2) * boundsScale.x;
+    render.bounds.min.y = ball.position.y - (render.options.height/2) * boundsScale.x;
+    console.log("first");
+}else if (second==true){
+    render.bounds.max.x = block.position.x + ((render.options.width/2) * boundsScale.x);
+    render.bounds.max.y = block.position.y + ((render.options.height/2) * boundsScale.x);
+
+    render.bounds.min.x = block.position.x - (render.options.width/2) * boundsScale.x;
+    render.bounds.min.y = block.position.y - (render.options.height/2) * boundsScale.x;
+    console.log("second");
+}else if(third==true){
+    render.bounds.max.x = theBird.position.x + ((render.options.width/2) * boundsScale.x);
+    render.bounds.max.y = theBird.position.y + ((render.options.height/2) * boundsScale.x);
+
+    render.bounds.min.x = theBird.position.x - (render.options.width/2) * boundsScale.x;
+    render.bounds.min.y = theBird.position.y - (render.options.height/2) * boundsScale.x;
+    console.log("third")
+}
+// translate so zoom is from centre of view
+translate = {
+    x: render.options.width * scaleFactor * -0.5,
+    y: render.options.height * scaleFactor * -0.5
+};
+
+Bounds.translate(render.bounds, translate);
+
+
+// update mouse
+Mouse.setScale(mouse, boundsScale);
+Mouse.setOffset(mouse, render.bounds.min);
+}
+
+});
+
+///////////////////////////////////////////////////////////////////////////////////
 
 
 //mini game objects
@@ -132,10 +153,10 @@ var egg = Bodies.circle(200, -1700, 30);
 Body.setMass(egg,10)
 
 //create cannon
-var cannonside1 = Bodies.rectangle(90, 410, 300, 20, {isStatic:true})
-var cannonside2 = Bodies.rectangle(120, 480, 300, 20, {isStatic:true})
-var end = Bodies.rectangle(10, 520, 45, 45, {isStatic:true})
-var ball = Bodies.polygon(170, 390, 25, 25, {restitution: 0.9, friction: 0, mass: 10})
+var cannonside1 = Bodies.rectangle(90, 410, 300, 20, {isStatic:true,render:{fillStyle: "#679bf5"}})
+var cannonside2 = Bodies.rectangle(120, 480, 300, 20, {isStatic:true,render:{fillStyle: "#679bf5"}})
+var end = Bodies.rectangle(10, 520, 45, 45, {isStatic:true,render:{fillStyle: "#679bf5"}})
+var ball = Bodies.polygon(170, 390, 25, 25, {restitution: 0.9, friction: 0, mass: 10,render:{fillStyle: "#fa5757"}})
 Body.rotate(cannonside1, 2.5);
 Body.rotate(cannonside2, 2.5)
 Body.rotate(end, 2.5)
@@ -143,24 +164,18 @@ Render.lookAt(render, {
     min: { x: ball.position.x - 750 , y: ball.position.y-300},
     max: { x: ball.position.x + 750, y: ball.position.y+300}
 });  
+
 // create funnel
-var funnel1 = Bodies.rectangle(1075+20, 780, 80, 20, {isStatic:true, angle: -1.3});
-var funnel2 = Bodies.rectangle(925, 780, 80, 20, {isStatic:true, angle:1.3});
-var funnel3 = Bodies.rectangle(1070+15, 840, 80, 20, {isStatic:true, angle:-1.2});
-var funnel4 = Bodies.rectangle(930, 840, 80, 20, {isStatic:true, angle:1.2});
-var funnel5 = Bodies.rectangle(1065+10, 890, 80, 20, {isStatic:true, angle:-1.1});
-var funnel6 = Bodies.rectangle(935, 890, 80, 20, {isStatic:true, angle:1.1});
-var funnel7 = Bodies.rectangle(1060+5, 940, 80, 20, {isStatic:true, angle:-1.0});
-var funnel8 = Bodies.rectangle(940, 940, 80, 20, {isStatic:true, angle:1.0});
+var funnel1 = Bodies.rectangle(1075+20, 780, 80, 20, {isStatic:true, angle: -1.3,render:{fillStyle: "#be57fa"}});
+var funnel2 = Bodies.rectangle(925, 780, 80, 20, {isStatic:true,angle:1.3,render:{fillStyle: "#be57fa"}});
+var funnel3 = Bodies.rectangle(1070+15, 840, 80, 20, {isStatic:true, angle:-1.2,render:{fillStyle: "#be57fa"}});
+var funnel4 = Bodies.rectangle(930, 840, 80, 20, {isStatic:true, angle:1.2,render:{fillStyle: "#be57fa"}});
+var funnel5 = Bodies.rectangle(1065+10, 890, 80, 20, {isStatic:true, angle:-1.1,render:{fillStyle: "#be57fa"}});
+var funnel6 = Bodies.rectangle(935, 890, 80, 20, {isStatic:true, angle:1.1,render:{fillStyle: "#be57fa"}});
+var funnel7 = Bodies.rectangle(1060+5, 940, 80, 20, {isStatic:true, angle:-1.0,render:{fillStyle: "#be57fa"}});
+var funnel8 = Bodies.rectangle(940, 940, 80, 20, {isStatic:true, angle:1.0,render:{fillStyle: "#be57fa"}});
 var funnels = []
-// Body.rotate(funnel1,);
-// Body.rotate(funnel2,);
-// Body.rotate(funnel3,);
-// Body.rotate(funnel4,);
-// Body.rotate(funnel5,);
-// Body.rotate(funnel6,);
-// Body.rotate(funnel7,);
-// Body.rotate(funnel8,);
+
 //create pegs for plinkos
 var cols = 10;
 var rows = 10;
@@ -172,7 +187,7 @@ for(var i = 0; i < rows; i++){
         if(i % 2 == 1){
             x += spacing/2 
             var y = spacing + i * spacing + 1200
-            var peg =  new Bodies.polygon(x,y,500,15, {isStatic:true})
+            var peg =  new Bodies.polygon(x,y,500,15, {isStatic:true,render:{fillStyle: "#57fa96"}})
             // var peg = new Peg(x, y, 5)
             pegs.push(peg);
             
@@ -180,7 +195,7 @@ for(var i = 0; i < rows; i++){
         else {
             if(j != 0){
                 var y = spacing + i * spacing + 1200
-                var peg =  new Bodies.polygon(x,y,500,15, {isStatic:true})
+                var peg =  new Bodies.polygon(x,y,500,15, {isStatic:true,render:{fillStyle: "#57fa96"}})
                 pegs.push(peg);
 
             }
@@ -189,54 +204,41 @@ for(var i = 0; i < rows; i++){
     }
 }
 //creates the boundaries for plinkos
-var boundary1 = Bodies.rectangle(175, 2050, 1450, 20, {isStatic:true, angle: Math.PI/2});
-var boundary2 = Bodies.rectangle(1700, 2050, 1450, 20, {isStatic:true, angle: Math.PI/2});
-
-// Body.rotate(boundary1,)
-// Body.rotate(boundary2,)
-
+var boundary1 = Bodies.rectangle(175, 2050, 1450, 20, {isStatic:true, angle: Math.PI/2,render:{fillStyle: "#57fa96"}});
+var boundary2 = Bodies.rectangle(1700, 2050, 1450, 20, {isStatic:true, angle: Math.PI/2,render:{fillStyle: "#57fa96"}});
 
 //bouncy walls
-var wall1 = Bodies.rectangle(1050, 130, 50, 150, {isStatic:true, angle:-2.5, restitution:1.3})
-var wall2 = Bodies.rectangle(780, 250, 50, 150, {isStatic:true, angle:2.5, restitution:1.3})
-var wall3 = Bodies.rectangle(1080, 350, 50, 150, {isStatic:true, angle:-2.5, restitution:1.3})
-var wall4 = Bodies.rectangle(780, 430, 50, 150, {isStatic:true, angle:2.4, restitution:1.3})
-// Body.rotate(wall1,)
-// Body.rotate(wall2,2.5)
-// Body.rotate(wall3,-2.5)
-// Body.rotate(wall4,2.5) 
-//create the ramps
-var platform = Bodies.rectangle(1420, 2880, 580, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.45})
-var platform2 = Bodies.rectangle(1000, 3050, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3})
-var platform3 = Bodies.rectangle(700, 3140, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3})
-var platform4 = Bodies.rectangle(120, 3070, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -2.2})
-var platform5 = Bodies.rectangle(320, 3300, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .7})
-var platform6 = Bodies.rectangle(580, 3435, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .2})
-var platform7 = Bodies.rectangle(1070, 3500, 700, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .1})
+var wall1 = Bodies.rectangle(1050, 130, 50, 150, {isStatic:true, angle:-2.5, restitution:1.3,render:{fillStyle: "#57f4fa"}})
+var wall2 = Bodies.rectangle(780, 250, 50, 150, {isStatic:true, angle:2.5, restitution:1.3,render:{fillStyle: "#57f4fa"}})
+var wall3 = Bodies.rectangle(1080, 350, 50, 150, {isStatic:true, angle:-2.5, restitution:1.3,render:{fillStyle: "#57f4fa"}})
+var wall4 = Bodies.rectangle(780, 430, 50, 150, {isStatic:true, angle:2.4, restitution:1.3,render:{fillStyle: "#57f4fa"}})
 
-// Body.rotate(platform,-.45)
-// Body.rotate(platform2, -0.2)
-// Body.rotate(platform3, -.3)
-// Body.rotate(platform4,-2.2)
-// Body.rotate(platform5,.7)
-// Body.rotate(platform6,.2)
-// Body.rotate(platform7,.1)
+//create the ramps
+var platform = Bodies.rectangle(1420, 2880, 580, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.45, render:{fillStyle: "#f589c1"}})
+var platform2 = Bodies.rectangle(1000, 3050, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3, render:{fillStyle: "#f589c1"}})
+var platform3 = Bodies.rectangle(700, 3140, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3, render:{fillStyle: "#f589c1"}})
+var platform4 = Bodies.rectangle(120, 3070, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -2.2, render:{fillStyle: "#f589c1"}})
+var platform5 = Bodies.rectangle(320, 3300, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .7, render:{fillStyle: "#f589c1"}})
+var platform6 = Bodies.rectangle(580, 3435, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .2, render:{fillStyle: "#f589c1"}})
+var platform7 = Bodies.rectangle(1070, 3500, 700, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .1, render:{fillStyle: "#f589c1"}})
+
 
 //add reverse gravity tunnel;
-var base = Bodies.rectangle(2000, 3950, 800, 20, {isStatic:true, friction: 0, angle: .2})
-var tunnelLeft = Bodies.rectangle(2300, 2410, 15, 3070, {isStatic:true})
-var tunnelRight = Bodies.rectangle(2400, 2420, 15, 3200, {isStatic:true})
+var base = Bodies.rectangle(2000, 3950, 900, 20, {isStatic:true, friction: 0, angle: .2, render:{fillStyle: "#6557fa"}})
+var tunnelLeft = Bodies.rectangle(2300, 2410, 15, 3070, {isStatic:true, render:{fillStyle: "#6557fa"}})
+var tunnelRight = Bodies.rectangle(2400, 2420, 15, 3200, {isStatic:true, render:{fillStyle: "#6557fa"}})
 // seasaw
-var baseOfSeasaw = Bodies.rectangle(2450, 450, 500, 15, {isStatic:true, friction: 0})
-var seaSaw = Bodies.rectangle(2450, 550, 400, 15, {isStatic:false, friction: 0})
-var block = Bodies.polygon(2665, 590, 25, 25, {isStatic:true, mass:.5, friction: 0, restitution: 0.8 })
+var baseOfSeasaw = Bodies.rectangle(2450, 450, 500, 15, {isStatic:true, friction: 0,render:{fillStyle: "#f5eb67"}})
+var seaSaw = Bodies.rectangle(2450, 550, 400, 15, {isStatic:false, friction: 0,render:{fillStyle: "#f5eb67"}})
+var block = Bodies.polygon(2665, 590, 25, 25, {isStatic:true, mass:.5, friction: 0, restitution: 0.8,render:{fillStyle: "#fa5757"}})
 //after seasaw
-var revRamp = Bodies.rectangle(3150, 250, 1000, 20, {isStatic:true, friction: 0, angle: -.4})
+var revRamp = Bodies.rectangle(3150, 250, 1150, 20, {isStatic:true, friction: 0, angle: -.4,render:{fillStyle: "#f5eb67"}})
 
 //create pendulum
-var pendulum = Bodies.polygon(3750, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
-var pendulum2 = Bodies.polygon(3840, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
-var pendulum3 = Bodies.polygon(3930, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
+var pendulum = Bodies.polygon(3750, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1,render:{fillStyle: "#8af567"}})
+var pendulum2 = Bodies.polygon(3840, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1,render:{fillStyle: "#8af567"}})
+var pendulum3 = Bodies.polygon(3930, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1,render:{fillStyle: "#8af567"}})
+
 
 var btnOptions = {
     render: {
@@ -248,6 +250,7 @@ var btnOptions = {
     },
     isStatic: true
 }
+
 
 var rectBtnBase = Bodies.rectangle(4040, 10, 10, 70, {isStatic:true})
 
@@ -279,17 +282,27 @@ var const2 = Constraint.create({
     stiffness: 0.5
 })
 
-var floor = Bodies.rectangle(54100, 7000, 100000, 60, {isStatic:true})
-var upperside = Bodies.rectangle(50600, 5700, 90000, 60, {isStatic:true})
-
-
+var btnOptionsNumeroDos = {
+    render: {
+        sprite:{
+            texture: "images/button.png",
+            xScale : 0.126, 
+            yScale: 0.126
+        }
+    },
+    isStatic: true
+}
+var floor = Bodies.rectangle(54100, 7000, 100000, 60, {isStatic:true,render:{fillStyle: "#f5b767"}})
+var upperside = Bodies.rectangle(50600, 5700, 90000, 60, {isStatic:true,render:{fillStyle: "#f5b767"}})
+var endTotal = Bodies.rectangle(95600, 6400, 60, 1300, {isStatic:true,render:{fillStyle: "#f5b767"}})
+var endBtn = Bodies.rectangle(95540, 6700, 90, 90, btnOptionsNumeroDos)
 //////////////////////////////////
 
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
     funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2,
     platform, platform2, platform3,platform4, platform5, platform6, platform7, base, tunnelLeft, tunnelRight, baseOfSeasaw, seaSaw, block,
-    revRamp, pendulum, pendulum2, pendulum3, rectBtnBase,btn,floor, upperside,
-    Constraint.create({ bodyA: seaSaw, pointB: { x: 2450, y: 550 }}),
+    revRamp, pendulum, pendulum2, pendulum3, rectBtnBase,btn,floor, upperside,endTotal,endBtn,
+    Constraint.create({ bodyA: seaSaw, pointB: { x: 2450, y: 550}}),
     Constraint.create({
         pointA: { x: 3750, y: 200},
         bodyB: pendulum,
@@ -325,11 +338,7 @@ setTimeout(() => {
     fireCannon();
 }, 3600);
 
-//code for changing camera view
-// Render.lookAt(render, {
-//     min: { x: ____, y: _________},
-//     max: { x: ______, y: __________}
-// });
+
 var particles = [];
 function fireCannon(){
     Body.applyForce(ball, ball.position, {x: 0.75, y:-0.75})
@@ -339,11 +348,13 @@ function fireCannon(){
 
 
 function followCamera(b){
+    var start = new Date();
     var interval = setInterval(() => {
-        Render.lookAt(render, {
-            min: { x: b.position.x-750 , y: b.position.y-300},
-            max: { x: b.position.x + 750, y: b.position.y+300}
-        });
+        render.bounds.max.x = b.position.x + ((render.options.width/2) * boundsScale.x);
+        render.bounds.max.y = b.position.y + ((render.options.height/2) * boundsScale.x);
+
+        render.bounds.min.x = b.position.x - (render.options.width/2) * boundsScale.x;
+        render.bounds.min.y = b.position.y - (render.options.height/2) * boundsScale.x;
         if(Collision.collides(b, tunnelRight)){
             engine.gravity.y = -1;
             engine.gravity.x = 0;
@@ -352,16 +363,16 @@ function followCamera(b){
         }
         if(Collision.collides(b,platform7)){
             // engine.gravity.x = 0.65;
-            Body.applyForce(ball, ball.position, {x: 0.001, y:0})
+            Body.applyForce(ball, ball.position, {x: 0.005, y:0})
             
         }
+
         if(Collision.collides(b,seaSaw)){
             block.isStatic = false;
             Composite.remove(engine.world,[ball])
             // Body.applyForce(block, block.position, {x: 0.01, y:0})
             clearInterval(interval)
             followCamera(block)
-            
         }
         if(Collision.collides(b, revRamp)){
             b.friction = 0;
@@ -374,8 +385,12 @@ function followCamera(b){
             runParachute(circle1);
         }
         //clear interval and re-call function whenever you want to follow a different object.
+
     }, 1)  
 }
+
+
+
 
 var sOptions = {
     render: {
@@ -401,6 +416,14 @@ function runParachute(b){
             // Fdrag = -kv^2
             // plug in k value, and velocity of object squared, as air resistance depends greatly on object velocity
             Body.applyForce(parachute, parachute.position, {x: 0, y: -(k * r2*0.000001)})
+        }
+
+        if(block.velocity.y>0){
+            var r2 = block.velocity.y * block.velocity.y;
+            var k = 0.5* (engine.world.density * (1) * 0.82)
+            // Fdrag = -kv^2
+            // plug in k value, and velocity of object squared, as air resistance depends greatly on object velocity
+            Body.applyForce(block, block.position, {x: 0, y: -(k * r2*0.000001)})
         }
         
         if(Collision.collides(b, floor)){
@@ -447,6 +470,8 @@ function startGame(theBir){
             if(Collision.collides(theBir, obstacles[i])){
                 Composite.remove(engine.world, theBir)
                 //add explosion
+                engine.gravity.y = 1;
+                engine.gravity.x = 0;
                 explode(theBir);
                 theBir = null;
                 setTimeout(() => {
@@ -457,8 +482,10 @@ function startGame(theBir){
             }
         }
         // || Collision.collides(theBir, side1) || Collision.collides(theBir, side2) tp if statement condition
-        if(Collision.collides(theBir, floor) || Collision.collides(theBir, upperside)){
+        if(Collision.collides(theBir, floor) || Collision.collides(theBir, upperside) || Collision.collides(endTotal, theBir)){
             Composite.remove(engine.world, theBir)
+            engine.gravity.y = 1;
+            engine.gravity.x = 0;
             explode(theBir);
             theBir = null;
             //add explosion
@@ -466,6 +493,24 @@ function startGame(theBir){
                 clearInterval(interval)
                 restartSim()
             }, 2000);
+        }
+        if(Collision.collides(theBir, endBtn)){
+            console.log("HEEEEEEEEEEEE")
+            clearInterval(interval)
+            engine.gravity.x = 0;
+            engine.gravity.y = 1;
+            Composite.remove(engine.world, theBir)
+            // MAKE EGG WHITE.
+            var newEgggg = Bodies.circle(95500, 6700, 40, {render:{fillStyle:"#f7f7e9"}})
+            Composite.add(engine.world, newEgggg);
+        }
+
+
+
+        
+        if(Collision.collides(theBir, endBtn)){
+            Composite.remove(engine.world, theBir)
+            clearInterval(interval)
         }
     }, 1)
 }
@@ -480,6 +525,7 @@ var exOptions = {
         }
     }
 }
+
 function explode(b){
     particles.splice(0, particles.length-1);
     for ( var i = 0; i< 50; i++){
@@ -508,30 +554,44 @@ function checkKey(e, temp){
 function restartSim(){
     obstacles.length = 0;
     Composite.clear(engine.world)
-    alert("Sammy is sexy")
+    alert("You Have Died Click Ok To Restart");
     engine.gravity.x = 0;
     engine.gravity.y = 1;
-    
-    cannonside1 = Bodies.rectangle(90, 410, 300, 20, {isStatic:true})
-    cannonside2 = Bodies.rectangle(120, 480, 300, 20, {isStatic:true})
-    end = Bodies.rectangle(10, 520, 45, 45, {isStatic:true})
-    ball = Bodies.polygon(170, 390, 25, 25, {restitution: 0.9, friction: 0, mass: 10})
-    Body.rotate(cannonside1, 2.5);
-    Body.rotate(cannonside2, 2.5)
-    Body.rotate(end, 2.5)
-    Render.lookAt(render, {
-        min: { x: ball.position.x - 750 , y: ball.position.y-300},
-        max: { x: ball.position.x + 750, y: ball.position.y+300}
-    });  
-    // create funnel
-funnel1 = Bodies.rectangle(1075+20, 780, 80, 20, {isStatic:true, angle: -1.3});
-funnel2 = Bodies.rectangle(925, 780, 80, 20, {isStatic:true, angle:1.3});
-funnel3 = Bodies.rectangle(1070+15, 840, 80, 20, {isStatic:true, angle:-1.2});
-funnel4 = Bodies.rectangle(930, 840, 80, 20, {isStatic:true, angle:1.2});
-funnel5 = Bodies.rectangle(1065+10, 890, 80, 20, {isStatic:true, angle:-1.1});
-funnel6 = Bodies.rectangle(935, 890, 80, 20, {isStatic:true, angle:1.1});
-funnel7 = Bodies.rectangle(1060+5, 940, 80, 20, {isStatic:true, angle:-1.0});
-funnel8 = Bodies.rectangle(940, 940, 80, 20, {isStatic:true, angle:1.0});
+
+    rectPara = Bodies.rectangle(200, -2000, 250, 30)
+rectSide1 = Bodies.rectangle(115, -1950, 45, 65, {isStatic:true})
+rectSide2 = Bodies.rectangle(285, -1950, 45, 65, {isStatic:true})
+
+parachute = Body.create({
+    parts:[rectPara, rectSide1, rectSide2]
+})
+
+Body.setMass(parachute, 10);
+egg = Bodies.circle(200, -1700, 30);
+Body.setMass(egg,10)
+
+//create cannon
+cannonside1 = Bodies.rectangle(90, 410, 300, 20, {isStatic:true,render:{fillStyle: "#679bf5"}})
+cannonside2 = Bodies.rectangle(120, 480, 300, 20, {isStatic:true,render:{fillStyle: "#679bf5"}})
+end = Bodies.rectangle(10, 520, 45, 45, {isStatic:true,render:{fillStyle: "#679bf5"}})
+ball = Bodies.polygon(170, 390, 25, 25, {restitution: 0.9, friction: 0, mass: 10,render:{fillStyle: "#fa5757"}})
+Body.rotate(cannonside1, 2.5);
+Body.rotate(cannonside2, 2.5)
+Body.rotate(end, 2.5)
+Render.lookAt(render, {
+    min: { x: ball.position.x - 750 , y: ball.position.y-300},
+    max: { x: ball.position.x + 750, y: ball.position.y+300}
+});  
+
+// create funnel
+funnel1 = Bodies.rectangle(1075+20, 780, 80, 20, {isStatic:true, angle: -1.3,render:{fillStyle: "#be57fa"}});
+funnel2 = Bodies.rectangle(925, 780, 80, 20, {isStatic:true,angle:1.3,render:{fillStyle: "#be57fa"}});
+funnel3 = Bodies.rectangle(1070+15, 840, 80, 20, {isStatic:true, angle:-1.2,render:{fillStyle: "#be57fa"}});
+funnel4 = Bodies.rectangle(930, 840, 80, 20, {isStatic:true, angle:1.2,render:{fillStyle: "#be57fa"}});
+funnel5 = Bodies.rectangle(1065+10, 890, 80, 20, {isStatic:true, angle:-1.1,render:{fillStyle: "#be57fa"}});
+funnel6 = Bodies.rectangle(935, 890, 80, 20, {isStatic:true, angle:1.1,render:{fillStyle: "#be57fa"}});
+funnel7 = Bodies.rectangle(1060+5, 940, 80, 20, {isStatic:true, angle:-1.0,render:{fillStyle: "#be57fa"}});
+funnel8 = Bodies.rectangle(940, 940, 80, 20, {isStatic:true, angle:1.0,render:{fillStyle: "#be57fa"}});
 funnels = []
 
 //create pegs for plinkos
@@ -545,7 +605,7 @@ for(var i = 0; i < rows; i++){
         if(i % 2 == 1){
             x += spacing/2 
             var y = spacing + i * spacing + 1200
-            var peg =  new Bodies.polygon(x,y,500,15, {isStatic:true})
+            var peg =  new Bodies.polygon(x,y,500,15, {isStatic:true,render:{fillStyle: "#57fa96"}})
             // var peg = new Peg(x, y, 5)
             pegs.push(peg);
             
@@ -553,7 +613,7 @@ for(var i = 0; i < rows; i++){
         else {
             if(j != 0){
                 var y = spacing + i * spacing + 1200
-                var peg =  new Bodies.polygon(x,y,500,15, {isStatic:true})
+                var peg =  new Bodies.polygon(x,y,500,15, {isStatic:true,render:{fillStyle: "#57fa96"}})
                 pegs.push(peg);
 
             }
@@ -562,95 +622,85 @@ for(var i = 0; i < rows; i++){
     }
 }
 //creates the boundaries for plinkos
-boundary1 = Bodies.rectangle(175, 2050, 1450, 20, {isStatic:true, angle: Math.PI/2});
-boundary2 = Bodies.rectangle(1700, 2050, 1450, 20, {isStatic:true, angle: Math.PI/2});
+boundary1 = Bodies.rectangle(175, 2050, 1450, 20, {isStatic:true, angle: Math.PI/2,render:{fillStyle: "#57fa96"}});
+boundary2 = Bodies.rectangle(1700, 2050, 1450, 20, {isStatic:true, angle: Math.PI/2,render:{fillStyle: "#57fa96"}});
 
 
 
 
 //bouncy walls
-wall1 = Bodies.rectangle(1050, 130, 50, 150, {isStatic:true, angle:-2.5, restitution:1.3})
-wall2 = Bodies.rectangle(780, 250, 50, 150, {isStatic:true, angle:2.5, restitution:1.3})
-wall3 = Bodies.rectangle(1080, 350, 50, 150, {isStatic:true, angle:-2.5, restitution:1.3})
-wall4 = Bodies.rectangle(780, 430, 50, 150, {isStatic:true, angle:2.4, restitution:1.3})
+wall1 = Bodies.rectangle(1050, 130, 50, 150, {isStatic:true, angle:-2.5, restitution:1.3,render:{fillStyle: "#57f4fa"}})
+wall2 = Bodies.rectangle(780, 250, 50, 150, {isStatic:true, angle:2.5, restitution:1.3,render:{fillStyle: "#57f4fa"}})
+wall3 = Bodies.rectangle(1080, 350, 50, 150, {isStatic:true, angle:-2.5, restitution:1.3,render:{fillStyle: "#57f4fa"}})
+wall4 = Bodies.rectangle(780, 430, 50, 150, {isStatic:true, angle:2.4, restitution:1.3,render:{fillStyle: "#57f4fa"}})
 
 //create the ramps
-platform = Bodies.rectangle(1420, 2880, 580, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.45})
-platform2 = Bodies.rectangle(1000, 3050, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3})
-platform3 = Bodies.rectangle(700, 3140, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3})
-platform4 = Bodies.rectangle(120, 3070, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -2.2})
-platform5 = Bodies.rectangle(320, 3300, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .7})
-platform6 = Bodies.rectangle(580, 3435, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .2})
-platform7 = Bodies.rectangle(1070, 3500, 700, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .1})
+platform = Bodies.rectangle(1420, 2880, 580, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.45, render:{fillStyle: "#f589c1"}})
+platform2 = Bodies.rectangle(1000, 3050, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3, render:{fillStyle: "#f589c1"}})
+platform3 = Bodies.rectangle(700, 3140, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -.3, render:{fillStyle: "#f589c1"}})
+platform4 = Bodies.rectangle(120, 3070, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: -2.2, render:{fillStyle: "#f589c1"}})
+platform5 = Bodies.rectangle(320, 3300, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .7, render:{fillStyle: "#f589c1"}})
+platform6 = Bodies.rectangle(580, 3435, 300, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .2, render:{fillStyle: "#f589c1"}})
+platform7 = Bodies.rectangle(1070, 3500, 700, 20, {isStatic:true, friction: 0, restitution: 0.8, angle: .1, render:{fillStyle: "#f589c1"}})
 
 //add reverse gravity tunnel;
-base = Bodies.rectangle(2000, 3950, 800, 20, {isStatic:true, friction: 0, angle: .2})
-tunnelLeft = Bodies.rectangle(2300, 2410, 15, 3070, {isStatic:true})
-tunnelRight = Bodies.rectangle(2400, 2420, 15, 3200, {isStatic:true})
+base = Bodies.rectangle(2000, 3950, 900, 20, {isStatic:true, friction: 0, angle: .2, render:{fillStyle: "#6557fa"}})
+tunnelLeft = Bodies.rectangle(2300, 2410, 15, 3070, {isStatic:true, render:{fillStyle: "#6557fa"}})
+tunnelRight = Bodies.rectangle(2400, 2420, 15, 3200, {isStatic:true, render:{fillStyle: "#6557fa"}})
 // seasaw
-baseOfSeasaw = Bodies.rectangle(2450, 450, 500, 15, {isStatic:true, friction: 0})
-seaSaw = Bodies.rectangle(2450, 550, 400, 15, {isStatic:false, friction: 0})
- block = Bodies.polygon(2665, 590, 25, 25, {isStatic:true, mass:.5, friction: 0, restitution: 0.8 })
+baseOfSeasaw = Bodies.rectangle(2450, 450, 500, 15, {isStatic:true, friction: 0,render:{fillStyle: "#f5eb67"}})
+seaSaw = Bodies.rectangle(2450, 550, 400, 15, {isStatic:false, friction: 0,render:{fillStyle: "#f5eb67"}})
+block = Bodies.polygon(2665, 590, 25, 25, {isStatic:true, mass:.5, friction: 0, restitution: 0.8,render:{fillStyle: "#fa5757"}})
 //after seasaw
- revRamp = Bodies.rectangle(3150, 250, 1000, 20, {isStatic:true, friction: 0, angle: -.4})
+revRamp = Bodies.rectangle(3150, 250, 1150, 20, {isStatic:true, friction: 0, angle: -.4,render:{fillStyle: "#f5eb67"}})
 
 //create pendulum
- pendulum = Bodies.polygon(3750, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
- pendulum2 = Bodies.polygon(3840, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
- pendulum3 = Bodies.polygon(3930, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1})
+pendulum = Bodies.polygon(3750, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1,render:{fillStyle: "#8af567"}})
+pendulum2 = Bodies.polygon(3840, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1,render:{fillStyle: "#8af567"}})
+pendulum3 = Bodies.polygon(3930, 0, 45, 45,{frictionAir: 0.001, restitution: 0.8, mass:1,render:{fillStyle: "#8af567"}})
 
- btnOptions = {
-    render: {
-        sprite:{
-            texture: "images/button.png",
-            xScale : 0.042,
-            yScale: 0.042
-        }
-    },
-    isStatic: true
-}
 
- rectBtnBase = Bodies.rectangle(4040, 10, 10, 70, {isStatic:true})
+rectBtnBase = Bodies.rectangle(4040, 10, 10, 70, {isStatic:true})
 
- btn = Bodies.rectangle(4010, 0, 30, 30, btnOptions)
+btn = Bodies.rectangle(4010, 0, 30, 30, btnOptions)
 
 //////////////////////////////////////////
- rectPara = Bodies.rectangle(4300, -200, 250, 30)
- rectSide1 = Bodies.rectangle(4215, -150, 45, 65, {isStatic:true})
- rectSide2 = Bodies.rectangle(4385, -150, 45, 65, {isStatic:true})
+rectPara = Bodies.rectangle(4300, -200, 250, 30)
+rectSide1 = Bodies.rectangle(4215, -150, 45, 65, {isStatic:true})
+rectSide2 = Bodies.rectangle(4385, -150, 45, 65, {isStatic:true})
 
- parachute = Body.create({
+parachute = Body.create({
     parts:[rectPara, rectSide1, rectSide2],
 })
 Body.setMass(parachute, 10);
 
- circle1 = Bodies.circle(4300, 100, 30);
+circle1 = Bodies.circle(4300, 100, 30);
 Body.setMass(circle1,10)
 
- const1 = Constraint.create({
+const1 = Constraint.create({
     bodyA: rectSide1,
     bodyB: circle1,
     length: 300,
     stiffness: 0.5
 });
- const2 = Constraint.create({
+const2 = Constraint.create({
     bodyA: rectSide2,
     bodyB: circle1,
     length: 300,
     stiffness: 0.5
 })
 
- floor = Bodies.rectangle(54100, 7000, 100000, 60, {isStatic:true})
- upperside = Bodies.rectangle(50600, 5700, 90000, 60, {isStatic:true})
-
-
+floor = Bodies.rectangle(54100, 7000, 100000, 60, {isStatic:true,render:{fillStyle: "#f5b767"}})
+upperside = Bodies.rectangle(50600, 5700, 90000, 60, {isStatic:true,render:{fillStyle: "#f5b767"}})
+endTotal = Bodies.rectangle(95600, 6400, 60, 1300, {isStatic:true,render:{fillStyle: "#f5b767"}})
+endBtn = Bodies.rectangle(95540, 6700, 90, 90, btnOptionsNumeroDos)
 //////////////////////////////////
 
 Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, wall3, wall4,
     funnel1, funnel2,funnel3,funnel4,funnel5,funnel6,funnel7,funnel8,boundary1,boundary2,
     platform, platform2, platform3,platform4, platform5, platform6, platform7, base, tunnelLeft, tunnelRight, baseOfSeasaw, seaSaw, block,
-    revRamp, pendulum, pendulum2, pendulum3, rectBtnBase,btn,floor, upperside,
-    Constraint.create({ bodyA: seaSaw, pointB: { x: 2450, y: 550 }}),
+    revRamp, pendulum, pendulum2, pendulum3, rectBtnBase,btn,floor, upperside,endTotal,endBtn,
+    Constraint.create({ bodyA: seaSaw, pointB: { x: 2450, y: 550}}),
     Constraint.create({
         pointA: { x: 3750, y: 200},
         bodyB: pendulum,
@@ -681,10 +731,14 @@ Composite.add(engine.world, [cannonside1, cannonside2, end, ball, wall1, wall2, 
         Composite.add(engine.world,[pegs[i]])
     }
 
-    setTimeout(() => {
-        fireCannon();
-    }, 3600);
-
+//create reverse gravity tunnel
+setTimeout(() => {
+    fireCannon();
+}, 3600);
 
     
 }
+
+
+//hnel.l.o
+
